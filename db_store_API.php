@@ -4,7 +4,7 @@
 $host = 'localhost';
 $dbname = 'vaikuntha';
 $username = 'root';
-    $password = '';
+$password = '';
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -32,11 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-     if ($password !== $confirmPassword) {
+    if ($password !== $confirmPassword) {
         echo json_encode(['status' => 'error', 'message' => 'Passwords do not match.']);
         exit;
     } 
- 
+
     // File upload
     $uploadDir = 'uploads/';
     if (!is_dir($uploadDir)) {
@@ -58,6 +58,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $createdAt = date('Y-m-d H:i:s');
 
         $stmt->execute([$username, $uniqueNumber, $email, $hashedPassword, $fileName, $createdAt, $user_location]);
+
+        // Set cookies before any output
+        setcookie("username", $username, time() + (86400 * 30), "/");  
+        setcookie("profile_picture", $fileName, time() + (86400 * 30), "/");
+        setcookie("unique_number", $uniqueNumber, time() + (86400 * 30), "/");
+        setcookie("user_location", $user_location, time() + (86400 * 30), "/");
+        setcookie("email", $email, time() + (86400 * 30), "/");
 
         echo json_encode(['status' => 'success', 'message' => 'User registered successfully.', 'data' => [
             'name' => $username,
